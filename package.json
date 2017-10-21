@@ -1,0 +1,30 @@
+{
+  "name": "safe-decode-uri-component",
+  "version": "1.0.0",
+  "description": "Safely decode URI components, leaving invalid sequences as they are",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha",
+    "benchmark": "node benchmark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jridgewell/safe-decode-uri-component.git"
+  },
+  "keywords": [
+    "decode",
+    "uri",
+    "component"
+  ],
+  "author": "Justin Ridgewell",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jridgewell/safe-decode-uri-component/issues"
+  },
+  "homepage": "https://github.com/jridgewell/safe-decode-uri-component#readme",
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "microtime": "^2.1.6",
+    "mocha": "^4.0.1"
+  }
+}
