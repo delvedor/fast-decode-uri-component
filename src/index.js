@@ -1,5 +1,4 @@
-module.exports = decodeURIComponent;
-function decodeURIComponent(string) {
+module.exports = function decodeURIComponent(string) {
   let k = string.indexOf('%');
   if (k === -1) return string;
 
@@ -11,7 +10,9 @@ function decodeURIComponent(string) {
   state = UTF8_ACCEPT;
 
   while (k > -1 && k < length - 2) {
-    codepoint = decode(string, k, codepoint);
+    const high = hexCodeToInt(string[k + 1], 4);
+    const low = hexCodeToInt(string[k + 2], 0);
+    codepoint = decode(codepoint, high | low);
 
     switch (state) {
       case UTF8_ACCEPT:
@@ -42,7 +43,7 @@ function decodeURIComponent(string) {
   }
 
   return decoded + string.substring(last);
-}
+};
 
 const HEX = Object.assign(Object.create(null), {
   '0':  0, '1':  1,
@@ -57,14 +58,14 @@ const HEX = Object.assign(Object.create(null), {
   'e': 14, 'E': 14,
   'f': 15, 'F': 15,
 });
-function hexCodeToInt(c, badShift) {
+function hexCodeToInt(c, shift) {
   const i = HEX[c];
-  return i === undefined ? 16 << badShift : i;
+  return i === undefined ? 255 : i << shift;
 }
 
 
 /**
- * The below algorithms are based on Bjoern Hoehrmann's DFA Unicode Decoder.
+ * The below algorithm is based on Bjoern Hoehrmann's DFA Unicode Decoder.
  * Copyright (c) 2008-2009 Bjoern Hoehrmann <bjoern@hoehrmann.de>
  * See http://bjoern.hoehrmann.de/utf-8/decoder/dfa/ for details.
  */
@@ -81,16 +82,6 @@ const UTF8_DATA = [
    7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,  7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
    8,8,2,2,2,2,2,2,2,2,2,2,2,2,2,2,  2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
   10,3,3,3,3,3,3,3,3,3,3,3,3,4,3,3, 11,6,6,6,5,8,8,8,8,8,8,8,8,8,8,8,
-  // Special "bad" byte character classes, at all possible values of (X << 4 | 256) or (256 | Y),
-  // where X and Y are 0 <= X <= 15.
-  13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13, 13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-  13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13, 13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-  13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13, 13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-  13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13, 13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-  13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13, 13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-  13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13, 13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-  13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13, 13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,
-  13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13, 13,
 
   // The second part is a transition table that maps a combination
   // of a state of the automaton and a character class to a state.
@@ -102,18 +93,14 @@ const UTF8_DATA = [
 
   // The third part maps the current character class to a mask that needs
   // to apply to it.
-  0x7F, 0x3F, 0x1F, 0x0F, 0x0F, 0x07, 0x07, 0x3F, 0x00, 0x3F, 0x0F, 0x07, 0x00, 0x00,
+  0x7F, 0x3F, 0x1F, 0x0F, 0x0F, 0x07, 0x07, 0x3F, 0x00, 0x3F, 0x0F, 0x07,
 ];
 
 let state = UTF8_ACCEPT;
-function decode(string, k, codepoint) {
-  const high = hexCodeToInt(string[k + 1], 0);
-  const low = hexCodeToInt(string[k + 2], 4);
-  const byte = (high << 4) | low;
-
+function decode(codepoint, byte) {
   const type = UTF8_DATA[byte];
-  const mask = UTF8_DATA[605 + type];
+  const mask = UTF8_DATA[364 + type];
 
-  state = UTF8_DATA[497 + state + type];
+  state = UTF8_DATA[256 + state + type];
   return (codepoint << 6) | (byte & mask);
 }
