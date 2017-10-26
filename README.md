@@ -1,4 +1,4 @@
-# safe-decode-uri-component
+# strip-invalid-trailing-encoding
 
 Decodes strings encoded by `encodeURI` and `encodeURIComponent`, without
 throwing errors on invalid escapes.
@@ -27,7 +27,7 @@ const decode = require('safe-decode-uri-component');
 decode(url); // => "http://github.com?value=test %E2%9A%A"
 ```
 
-Notice that `%20` was decoded to ` `, and the invalid sequence
+Notice that `%20` was decoded to a space, and the invalid sequence
 `%E2%9A%A` remains. This is exactly like `decodeURIComponent`, except we
 don't balk at an invalid sequence.
 
