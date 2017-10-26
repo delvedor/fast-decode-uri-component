@@ -3,7 +3,9 @@
 const decode = require('..');
 const assert = require('assert');
 // Lol, I'm running so many tests that mocha broke.
-const { describe, it } = require('./mocha');
+const mocha = require('./mocha');
+const describe = mocha.describe;
+const it = mocha.it;
 
 describe('Safe decodeURIComponent',() => {
 

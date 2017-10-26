@@ -1,3 +1,5 @@
+"use strict";
+
 let i = 0;
 const context = [];
 exports.describe = (description, fn) => {

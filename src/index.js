@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = function decodeURIComponent(string) {
   let k = string.indexOf('%');
   if (k === -1) return string;
