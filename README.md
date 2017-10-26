@@ -1,4 +1,4 @@
-# strip-invalid-trailing-encoding
+# safe-decode-uri-component
 
 Decodes strings encoded by `encodeURI` and `encodeURIComponent`, without
 throwing errors on invalid escapes.
