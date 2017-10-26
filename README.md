@@ -55,10 +55,10 @@ npm install --save safe-decode-uri-component
 
 ## Node.js
 
-We also provide a native Node.js module, available as the `n-api` tag:
+We also provide a native Node.js module, available as the `native` tag:
 
 ```bash
-npm install --save safe-decode-uri-component@n-api
+npm install --save safe-decode-uri-component@native
 ```
 
 It's way faster, faster than even native `decodeURIComponent`.
