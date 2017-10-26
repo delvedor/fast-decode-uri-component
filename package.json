@@ -4,7 +4,7 @@
   "description": "Safely decode URI components, leaving invalid sequences as they are",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "node tests/index",
     "benchmark": "node benchmark"
   },
   "repository": {
@@ -24,7 +24,6 @@
   "homepage": "https://github.com/jridgewell/safe-decode-uri-component#readme",
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "microtime": "^2.1.6",
-    "mocha": "^4.0.1"
+    "microtime": "^2.1.6"
   }
 }
