@@ -13,7 +13,7 @@ exports.describe = (description, fn) => {
 };
 
 exports.it = (description, fn) => {
-  if (i++ % 1000 === 0) {
+  if (++i % 1000 === 0) {
     process.stdout.write('·');
   }
 
@@ -21,8 +21,13 @@ exports.it = (description, fn) => {
     fn();
   } catch (e) {
     context.push(description);
-    console.error(context.join('\n\t'), e);
-    context.pop();
-    throw e;
+
+    let string = '\n';
+    for (let i = 0; i < context.length; i++) {
+      string += `${'\t'.repeat(i)}${context[i]}\n`;
+    }
+    console.error(string);
+    console.error(e.stack);
+    process.exit(1);
   }
 };
