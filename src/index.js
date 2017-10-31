@@ -71,38 +71,47 @@ function hexCodeToInt(c, shift) {
  * Copyright (c) 2008-2009 Bjoern Hoehrmann <bjoern@hoehrmann.de>
  * See http://bjoern.hoehrmann.de/utf-8/decoder/dfa/ for details.
  */
-const UTF8_ACCEPT = 0;
-const UTF8_REJECT = 12;
+const UTF8_ACCEPT = 12;
+const UTF8_REJECT = 0;
 const UTF8_DATA = [
-  // The first part of the table maps bytes to character classes that
-  // to reduce the size of the transition table and create bitmasks.
-   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,  9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
-   7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,  7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-   8,8,2,2,2,2,2,2,2,2,2,2,2,2,2,2,  2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-  10,3,3,3,3,3,3,3,3,3,3,3,3,4,3,3, 11,6,6,6,5,8,8,8,8,8,8,8,8,8,8,8,
+  // The first part of the table maps bytes to character to a transition.
+   0, 0, 0, 0,  0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0,  0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0,  0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0,  0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0,  0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0,  0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0,  0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0,  0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
+   1, 1, 1, 1,  1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1,
+   2, 2, 2, 2,  2, 2, 2, 2,   2, 2, 2, 2, 2, 2, 2, 2,
+   3, 3, 3, 3,  3, 3, 3, 3,   3, 3, 3, 3, 3, 3, 3, 3,
+   3, 3, 3, 3,  3, 3, 3, 3,   3, 3, 3, 3, 3, 3, 3, 3,
+   4, 4, 5, 5,  5, 5, 5, 5,   5, 5, 5, 5, 5, 5, 5, 5,
+   5, 5, 5, 5,  5, 5, 5, 5,   5, 5, 5, 5, 5, 5, 5, 5,
+   6, 7, 7, 7,  7, 7, 7, 7,   7, 7, 7, 7, 7, 8, 7, 7,
+  10, 9, 9, 9, 11, 4, 4, 4,   4, 4, 4, 4, 4, 4, 4, 4,
 
-  // The second part is a transition table that maps a combination
-  // of a state of the automaton and a character class to a state.
-   0,12,24,36,60,96,84,12,12,12,48,72, 12,12,12,12,12,12,12,12,12,12,12,12,
-  12, 0,12,12,12,12,12, 0,12, 0,12,12, 12,24,12,12,12,12,12,24,12,24,12,12,
-  12,12,12,12,12,12,12,24,12,12,12,12, 12,24,12,12,12,12,12,12,12,24,12,12,
-  12,12,12,12,12,12,12,36,12,36,12,12, 12,36,12,12,12,12,12,36,12,36,12,12,
-  12,36,12,12,12,12,12,12,12,12,12,12,
+  // The second part of the table maps a state to a new state when adding a
+  // transition.
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  12,  0,  0,  0,  0, 24, 36, 48, 60, 72, 84, 96,
+   0, 12, 12, 12,  0,  0,  0,  0,  0,  0,  0,  0,
+   0,  0,  0, 24,  0,  0,  0,  0,  0,  0,  0,  0,
+   0, 24, 24, 24,  0,  0,  0,  0,  0,  0,  0,  0,
+   0, 24, 24,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+   0, 48, 48, 48,  0,  0,  0,  0,  0,  0,  0,  0,
+   0,  0, 48, 48,  0,  0,  0,  0,  0,  0,  0,  0,
+   0, 48,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 
-  // The third part maps the current character class to a mask that needs
-  // to apply to it.
-  0x7F, 0x3F, 0x1F, 0x0F, 0x0F, 0x07, 0x07, 0x3F, 0x00, 0x3F, 0x0F, 0x07,
+  // The third part maps the current transition to a mask that needs to apply
+  // to the byte.
+  0x7F, 0x3F, 0x3F, 0x3F, 0x00, 0x1F, 0x0F, 0x0F, 0x0F, 0x07, 0x07, 0x07,
 ];
 
 let state = UTF8_ACCEPT;
 function decode(codepoint, byte) {
   const type = UTF8_DATA[byte];
-  const mask = UTF8_DATA[364 + type];
-
   state = UTF8_DATA[256 + state + type];
-  return (codepoint << 6) | (byte & mask);
+  return (codepoint << 6) | (byte & UTF8_DATA[364 + type]);
 }
