@@ -39,7 +39,7 @@ module.exports = function decodeURIComponent(string) {
       case UTF8_REJECT:
         state = UTF8_ACCEPT;
         codepoint = 0;
-        k = startOfOctets = string.indexOf('%', k + 1);
+        k = startOfOctets = string.indexOf('%', startOfOctets + 1);
         break;
     }
   }
