@@ -63,7 +63,7 @@ describe('Safe decodeURIComponent',() => {
       const combined = `${encodedLeft}${encodedChar}${encodedRight}`;
       const actual = decode(combined);
       const expected = `${left}${char}${right}`;
-      assert.equal(decode(combined), expected, [...arguments]);
+      assert.equal(decode(combined), expected);
     }
 
     return function(char, left, encodedChar, right) {
