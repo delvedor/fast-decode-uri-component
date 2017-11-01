@@ -10,7 +10,7 @@ const it = mocha.it;
 describe('Safe decodeURIComponent',() => {
 
   function validCodes(iterator) {
-    for (let i = 0, j = 0; i <= 0xFFFF; i++, j++) {
+    for (let i = 0; i <= 0xFFFF; i += 16) {
       // This skips the invalid range
       if (i === 0xD800) {
         i = 0xE000;
@@ -20,7 +20,7 @@ describe('Safe decodeURIComponent',() => {
     }
   }
   function validSurrogates(iterator) {
-    for (let i = 0x10000; i < 0x10FFFF; i++) {
+    for (let i = 0x10000; i < 0x10FFFF; i += 16) {
       const char = String.fromCharCode(0xD7C0 + (i >> 10), 0xDC00 + (i & 0x3FF));
       iterator(char);
     }
@@ -40,7 +40,7 @@ describe('Safe decodeURIComponent',() => {
     iterator('%F4%B0%80%80');
   }
   function surrogateHalves(iterator) {
-    for (let i = 0x10000; i < 0x10FFFF; i++) {
+    for (let i = 0x10000; i < 0x10FFFF; i += 16) {
       iterator(`%${toHex(0xD7C0 + (i >> 10))}`);
       iterator(`%${toHex(0xDC00 + (i & 0x3FF))}`);
     }
@@ -83,10 +83,10 @@ describe('Safe decodeURIComponent',() => {
       it('decodes correctly encoded strings', () => {
         const encoded = encodeURIComponent(char);
 
-        for (let i = 0; i < 128; i++) {
-          if (i === 47) {
-            i += 11;
-          } else if (i === 65 || i === 97) {
+        for (let i = 0; i < 128; i += 3) {
+          if (i === 48) {
+            i += 12;
+          } else if (i === 66 || i === 99) {
             i += 6;
           }
           const other = String.fromCharCode(i);
@@ -101,8 +101,11 @@ describe('Safe decodeURIComponent',() => {
         const encoded = encodeURIComponent(char);
         for (let i = 1; i < encoded.length; i++) {
           const rightside = encoded.slice(0, i);
-          const leftside = encoded.slice(i);
           test(rightside, '', rightside, '');
+        }
+
+        for (let i = 3; i < encoded.length; i += 3) {
+          const leftside = encoded.slice(i);
           test(leftside, '', leftside, '');
         }
       });
@@ -111,12 +114,11 @@ describe('Safe decodeURIComponent',() => {
         const encoded = encodeURIComponent(char);
         for (let i = 1; i < encoded.length; i++) {
           const rightside = encoded.slice(0, i);
-          const leftside = encoded.slice(i);
 
-          for (let j = 0; j < 128; j++) {
-            if (j === 47) {
-              j += 11;
-            } else if (j === 65 || j === 97) {
+          for (let j = 0; j < 128; j += 3) {
+            if (j === 48) {
+              j += 12;
+            } else if (j === 66 || j === 99) {
               j += 6;
             }
             const other = String.fromCharCode(j);
@@ -124,7 +126,19 @@ describe('Safe decodeURIComponent',() => {
             test(rightside, other, rightside, '');
             test(rightside, '', rightside, other);
             test(rightside, other, rightside, other);
+          }
+        }
 
+        for (let i = 3; i < encoded.length; i += 3) {
+          const leftside = encoded.slice(i);
+
+          for (let j = 0; j < 128; j += 3) {
+            if (j === 48) {
+              j += 12;
+            } else if (j === 66 || j === 99) {
+              j += 6;
+            }
+            const other = String.fromCharCode(j);
             test(leftside, '', leftside, '');
             test(leftside, other, leftside, '');
             test(leftside, '', leftside, other);
@@ -150,7 +164,9 @@ describe('Safe decodeURIComponent',() => {
           test(rightside, '💩', rightside, '');
           test(rightside, '', rightside, '💩');
           test(rightside, '💩', rightside, '💩');
+        }
 
+        for (let i = 3; i < encoded.length; i += 3) {
           const leftside = encoded.slice(i);
           test(leftside, ' ', leftside, '');
           test(leftside, '', leftside, ' ');
