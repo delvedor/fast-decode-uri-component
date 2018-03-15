@@ -1,82 +1,41 @@
-# safe-decode-uri-component
+# fast-decode-uri-component
 
-[![Build Status](https://travis-ci.org/jridgewell/safe-decode-uri-component.svg?branch=master)](https://travis-ci.org/jridgewell/safe-decode-uri-component)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 
-Decodes strings encoded by `encodeURI` and `encodeURIComponent`, without
-throwing errors on invalid escapes.
+Decodes strings encoded by `encodeURI` and `encodeURIComponent`, without throwing errors on invalid escapes, instead, it returns `null`.
 
-```js
-const base = "http://github.com";
-const query = `?value=${encodeURIComponent('test ⚡')}`;
-
-const url = base + query; // => "http://github.com?value=test%20%E2%9A%A1"
-
-// Now, something happens and the url gets truncated:
-// url = "http://github.com?value=test%20%E2%9A%A"
-
-decodeURIComponent(url); // THROWS ERROR
-```
-
-Truncating "useless" params from a URL happen for any number of reasons.
-Or, maybe a your user just typed in a bad URL? Either way, it's annoying
-when all you want is the decoded value, treating invalid escapes as if
-they were just regular characters.
-
-
-```js
-const decode = require('safe-decode-uri-component');
-
-decode(url); // => "http://github.com?value=test %E2%9A%A"
-```
-
-Notice that `%20` was decoded to a space, and the invalid sequence
-`%E2%9A%A` remains. This is exactly like `decodeURIComponent`, except we
-don't balk at an invalid sequence.
-
-```js
-decode("value=test%20%E2%9A%A1"); // => "value=test ⚡"
-decode("value=test%20%E2%9A%A");  // => "value=test %E2%9A%A"
-decode("value=test%20%E2%9A%");   // => "value=test %E2%9A%"
-decode("value=test%20%E2%9A");    // => "value=test %E2%9A"
-decode("value=test%20%E2%9");     // => "value=test %E2%9"
-decode("value=test%20%E2%");      // => "value=test %E2%"
-decode("value=test%20%E2");       // => "value=test %E2"
-decode("value=test%20%E");        // => "value=test %E"
-decode("value=test%20%");         // => "value=test %"
-decode("value=test%20");          // => "value=test "
-decode("value=test%2");           // => "value=test%2"
-decode("value=test%");            // => "value=test%"
-decode("value=test");             // => "value=test"
-```
 
 ## Installation
-
-```bash
-npm install --save safe-decode-uri-component
+```
+npm install fast-decode-uri-component
 ```
 
-## Node.js
+## Usage
+```js
+const fastDecode = require('fast-decode-uri-component')
 
-We also provide a native Node.js module, available as the `native` tag:
-
-```bash
-npm install --save safe-decode-uri-component@native
+console.log(fastDecode('test')) // 'test'
+console.log(fastDecode('%7B%ab%7C%de%7D')) // '{%ab|%de}'
+console.log(fastDecode('%ab')) // null
 ```
 
-It's way faster, faster than even native `decodeURIComponent`.
+We support also '%' if is alone, eg `'%7B%ab%7C%de%7D'` here the url is composed as following: `%7B %ab %7C %de %7D` so `'%ab'` and `'%de'` will throw an error with the native `decodeURIComponent`.
 
+## Benchmarks
+You can find the benchmark file [here](https://github.com/delvedor/fast-decode-uri-component/blob/master/bench.js).
 ```
-$ npm run benchmark
+# fast-decode-uri-component
+ok ~539 ms (0 s + 539114308 ns)
 
-Short String (native) x 1,448,425 ops/sec ±0.97% (85 runs sampled)
-Short String (safe) x 3,449,002 ops/sec ±0.73% (88 runs sampled)
-Fastest is Short String (safe)
-
-Medium String (native) x 18,491 ops/sec ±0.84% (90 runs sampled)
-Medium String (safe) x 22,695 ops/sec ±0.81% (88 runs sampled)
-Fastest is Medium String (safe)
-
-Long String (native) x 33.56 ops/sec ±1.01% (58 runs sampled)
-Long String (safe) x 41.83 ops/sec ±0.73% (54 runs sampled)
-Fastest is Long String (safe)
+# decodeURIComponent
+ok ~6.06 s (6 s + 62305153 ns)
 ```
+
+## Acknowledgements
+This project has been forked from [`jridgewell/safe-decode-uri-component`](https://github.com/jridgewell/safe-decode-uri-component) because I wanted to change the behaviour of the library on invalid inputs, plus change some internals.<br>
+All the credits before the commit [`53000fe`](https://github.com/delvedor/fast-decode-uri-component/commit/53000feb8c268eec7a24620fd440fdd540be32b7) goes to the `jridgewell/safe-decode-uri-component` project [contributors](https://github.com/delvedor/fast-decode-uri-component/graphs/contributors).<br>
+Since the commit [`aaa`](aaa) the project will be maintained by the @delvedor.
+
+## License
+
+Licensed under [MIT](./LICENSE).
