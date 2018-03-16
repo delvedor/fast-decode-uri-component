@@ -15,11 +15,13 @@ npm install fast-decode-uri-component
 const fastDecode = require('fast-decode-uri-component')
 
 console.log(fastDecode('test')) // 'test'
-console.log(fastDecode('%7B%ab%7C%de%7D')) // '{%ab|%de}'
+console.log(fastDecode('%25')) // '%'
+console.log(fastDecode('/test/hel%2Flo')) // '/test/hel/lo'
+
+console.log(fastDecode('/test/hel%"Flo')) // null
+console.log(fastDecode('%7B%ab%7C%de%7D')) // null
 console.log(fastDecode('%ab')) // null
 ```
-
-We support also '%' if is alone, eg `'%7B%ab%7C%de%7D'` here the url is composed as following: `%7B %ab %7C %de %7D` so `'%ab'` and `'%de'` will throw an error with the native `decodeURIComponent`.
 
 ## Benchmarks
 You can find the benchmark file [here](https://github.com/delvedor/fast-decode-uri-component/blob/master/bench.js).
@@ -34,7 +36,7 @@ ok ~6.06 s (6 s + 62305153 ns)
 ## Acknowledgements
 This project has been forked from [`jridgewell/safe-decode-uri-component`](https://github.com/jridgewell/safe-decode-uri-component) because I wanted to change the behaviour of the library on invalid inputs, plus change some internals.<br>
 All the credits before the commit [`53000fe`](https://github.com/delvedor/fast-decode-uri-component/commit/53000feb8c268eec7a24620fd440fdd540be32b7) goes to the `jridgewell/safe-decode-uri-component` project [contributors](https://github.com/delvedor/fast-decode-uri-component/graphs/contributors).<br>
-Since the commit [`aaa`](aaa) the project will be maintained by the @delvedor.
+Since the commit [`9673ab7`](https://github.com/delvedor/fast-decode-uri-component/commit/9673ab7820ef92081206a9f4fd158ffe9a352861) the project will be maintained by [**@delvedor**](https://github.com/delvedor).
 
 ## License
 
