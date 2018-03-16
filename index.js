@@ -51,7 +51,7 @@ function decodeURIComponent (uri) {
   var startOfOctets = percentPosition
   state = UTF8_ACCEPT
 
-  while (percentPosition > -1 && percentPosition < length - 2) {
+  while (percentPosition > -1 && percentPosition < length) {
     var high = hexCodeToInt(uri[percentPosition + 1], 4)
     var low = hexCodeToInt(uri[percentPosition + 2], 0)
     codepoint = decode(codepoint, high | low)
@@ -70,9 +70,7 @@ function decodeURIComponent (uri) {
       last = percentPosition + 3
       percentPosition = startOfOctets = uri.indexOf('%', last)
     } else if (state === UTF8_REJECT) {
-      state = UTF8_ACCEPT
-      codepoint = 0
-      percentPosition = startOfOctets = uri.indexOf('%', startOfOctets + 1)
+      return null
     } else {
       percentPosition += 3
       if (percentPosition < length && uri.charCodeAt(percentPosition) === 37) continue
@@ -82,11 +80,7 @@ function decodeURIComponent (uri) {
     }
   }
 
-  if (decoded.length === 0) {
-    return null
-  } else {
-    return decoded + uri.slice(last)
-  }
+  return decoded + uri.slice(last)
 }
 
 const HEX = {
