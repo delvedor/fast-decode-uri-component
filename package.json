@@ -26,6 +26,7 @@
   "homepage": "https://github.com/delvedor/fast-decode-uri-component#readme",
   "devDependencies": {
     "nanobench": "^2.1.1",
+    "randomstring": "^1.1.5",
     "standard": "^11.0.1",
     "tap": "^11.1.2"
   }
