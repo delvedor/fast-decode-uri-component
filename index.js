@@ -80,6 +80,7 @@ function decodeURIComponent (uri) {
     }
   }
 
+  if (decoded.length === 0) return null
   return decoded + uri.slice(last)
 }
 
