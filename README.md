@@ -1,6 +1,6 @@
 # fast-decode-uri-component
 
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)  [![Build Status](https://travis-ci.org/delvedor/fast-decode-uri-component.svg?branch=master)](https://travis-ci.org/delvedor/fast-decode-uri-component)
 
 Decodes strings encoded by `encodeURI` and `encodeURIComponent`, without throwing errors on invalid escapes, instead, it returns `null`.
 
