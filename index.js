@@ -52,7 +52,10 @@ function decodeURIComponent (uri) {
   while (percentPosition > -1 && percentPosition < length) {
     var high = hexCodeToInt(uri[percentPosition + 1], 4)
     var low = hexCodeToInt(uri[percentPosition + 2], 0)
-    codepoint = decode(codepoint, high | low)
+    var byte = high | low
+    var type = UTF8_DATA[byte]
+    state = UTF8_DATA[256 + state + type]
+    codepoint = (codepoint << 6) | (byte & UTF8_DATA[364 + type])
 
     if (state === UTF8_ACCEPT) {
       decoded += uri.slice(last, startOfOctets)
@@ -77,17 +80,6 @@ function decodeURIComponent (uri) {
   }
 
   return decoded + uri.slice(last)
-
-  /**
-   * The below algorithm is based on Bjoern Hoehrmann's DFA Unicode Decoder.
-   * Copyright (c) 2008-2009 Bjoern Hoehrmann <bjoern@hoehrmann.de>
-   * See http://bjoern.hoehrmann.de/utf-8/decoder/dfa/ for details.
-   */
-  function decode (codepoint, byte) {
-    var type = UTF8_DATA[byte]
-    state = UTF8_DATA[256 + state + type]
-    return (codepoint << 6) | (byte & UTF8_DATA[364 + type])
-  }
 }
 
 const HEX = {
