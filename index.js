@@ -38,8 +38,6 @@ const UTF8_DATA = [
   0x7F, 0x3F, 0x3F, 0x3F, 0x00, 0x1F, 0x0F, 0x0F, 0x0F, 0x07, 0x07, 0x07
 ]
 
-var state = UTF8_ACCEPT
-
 function decodeURIComponent (uri) {
   var percentPosition = uri.indexOf('%')
   if (percentPosition === -1) return uri
@@ -49,7 +47,7 @@ function decodeURIComponent (uri) {
   var last = 0
   var codepoint = 0
   var startOfOctets = percentPosition
-  state = UTF8_ACCEPT
+  var state = UTF8_ACCEPT
 
   while (percentPosition > -1 && percentPosition < length) {
     var high = hexCodeToInt(uri[percentPosition + 1], 4)
@@ -74,14 +72,22 @@ function decodeURIComponent (uri) {
     } else {
       percentPosition += 3
       if (percentPosition < length && uri.charCodeAt(percentPosition) === 37) continue
-      state = UTF8_ACCEPT
-      codepoint = 0
-      percentPosition = startOfOctets = uri.indexOf('%', startOfOctets + 1)
+      return null
     }
   }
 
-  if (decoded.length === 0) return null
   return decoded + uri.slice(last)
+
+  /**
+   * The below algorithm is based on Bjoern Hoehrmann's DFA Unicode Decoder.
+   * Copyright (c) 2008-2009 Bjoern Hoehrmann <bjoern@hoehrmann.de>
+   * See http://bjoern.hoehrmann.de/utf-8/decoder/dfa/ for details.
+   */
+  function decode (codepoint, byte) {
+    var type = UTF8_DATA[byte]
+    state = UTF8_DATA[256 + state + type]
+    return (codepoint << 6) | (byte & UTF8_DATA[364 + type])
+  }
 }
 
 const HEX = {
@@ -112,17 +118,6 @@ const HEX = {
 function hexCodeToInt (c, shift) {
   var i = HEX[c]
   return i === undefined ? 255 : i << shift
-}
-
-/**
- * The below algorithm is based on Bjoern Hoehrmann's DFA Unicode Decoder.
- * Copyright (c) 2008-2009 Bjoern Hoehrmann <bjoern@hoehrmann.de>
- * See http://bjoern.hoehrmann.de/utf-8/decoder/dfa/ for details.
- */
-function decode (codepoint, byte) {
-  var type = UTF8_DATA[byte]
-  state = UTF8_DATA[256 + state + type]
-  return (codepoint << 6) | (byte & UTF8_DATA[364 + type])
 }
 
 module.exports = decodeURIComponent
