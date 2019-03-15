@@ -1,8 +1,8 @@
 'use strict'
 
-const UTF8_ACCEPT = 12
-const UTF8_REJECT = 0
-const UTF8_DATA = [
+var UTF8_ACCEPT = 12
+var UTF8_REJECT = 0
+var UTF8_DATA = [
   // The first part of the table maps bytes to character to a transition.
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -82,7 +82,7 @@ function decodeURIComponent (uri) {
   return decoded + uri.slice(last)
 }
 
-const HEX = {
+var HEX = {
   '0': 0,
   '1': 1,
   '2': 2,
