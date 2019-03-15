@@ -1,6 +1,6 @@
 {
   "name": "fast-decode-uri-component",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fast and safe decodeURIComponent",
   "main": "index.js",
   "scripts": {
